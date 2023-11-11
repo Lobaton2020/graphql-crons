@@ -1,0 +1,38 @@
+type Query {
+  crons: [Cron!]!
+  cron(id: ID!): Cron
+}
+
+type Mutation {
+    createCron(cron: NewCronInput):String
+    editCron(id:ID, cron: EditCronInput):Cron
+}
+type Cron {
+  id: ID!
+  name: String!
+  date: String!
+  tasks: [Task]
+}
+
+type Task {
+  id: ID
+  description: String
+  state: Boolean
+  hour: Int
+  minute: Int
+  project: Project
+}
+
+type Project {
+    id: ID!
+    name: String!
+}
+
+input NewCronInput{
+    name: String!
+    date: String!
+}
+input EditCronInput {
+    name: String!
+    date: String!
+}

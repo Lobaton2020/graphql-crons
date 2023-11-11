@@ -1,0 +1,27 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "dist/index.js",
+            "use": "@vercel/node",
+            "config": {
+                "includeFiles": [
+                    "dist/schemas/**/*.graphql"
+                ]
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "dist/index.js"
+        }
+    ],
+    "env": {
+        "DB_HOST": "@db_host",
+        "DB_PORT": "@db_port",
+        "DB_USER": "@db_user",
+        "DB_PASSWORD": "@db_password",
+        "DB_NAME": "@db_name"
+    }
+}

@@ -1,0 +1,15 @@
+type Query{
+    hello: String!
+    characters: [Character!]!
+}
+type Character{
+    id: ID
+    name: String
+    race: Race
+}
+
+enum Race {
+    HILIAM
+    GERUDO
+    FAILIN
+}

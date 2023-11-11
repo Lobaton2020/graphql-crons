@@ -1,0 +1,31 @@
+type Query{
+    getPerson(id:ID!):Person
+}
+
+interface IPerson{
+    id: ID,
+    name: String
+    address: String
+}
+
+type Male implements IPerson{
+    id: ID,
+    name: String
+    address: String
+}
+
+type Female implements IPerson{
+    id: ID,
+    name: String
+    address: String
+    age: Int
+}
+
+union Person = Male | Female
+
+
+
+
+
+
+
