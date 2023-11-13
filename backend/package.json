@@ -21,7 +21,7 @@
     "graphql": "^16.8.1",
     "graphql-import-node": "^0.0.5",
     "graphql-tools": "^9.0.0",
-    "mysql": "^2.18.1",
+    "mysql2": "^3.6.3",
     "ncp": "^2.0.0"
   },
   "devDependencies": {

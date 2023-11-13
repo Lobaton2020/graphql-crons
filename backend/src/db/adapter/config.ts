@@ -1,8 +1,8 @@
-import { createConnection, Connection } from "mysql";
-export const connection: Connection = createConnection({
+import { createPool } from "mysql2/promise";
+export const pool = createPool({
   host: process.env.DB_HOST,
   port: +`${process.env.DB_PORT}`,
   user: process.env.DB_USER,
-  password: atob(`${process.env.DB_PASSWORD}`),
+  password: `${process.env.DB_PASSWORD}`,
   database: process.env.DB_NAME,
 });
