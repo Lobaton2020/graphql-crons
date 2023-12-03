@@ -8,10 +8,16 @@ export const resolversCron: IResolvers = {
   Query: {
     crons: cronResolver.getCrons.bind(cronResolver),
     cron: cronResolver.getCronById.bind(cronResolver),
+    projects: cronResolver.getProjects.bind(cronResolver),
   },
   Mutation: {
     createCron: cronResolver.createCron.bind(cronResolver),
     editCron: cronResolver.editCron.bind(cronResolver),
+    editTask: cronResolver.editTask.bind(cronResolver),
+    createTask: cronResolver.createTask.bind(cronResolver),
+    removeCron: cronResolver.removeCron.bind(cronResolver),
+    copyCron: cronResolver.copyCron.bind(cronResolver),
+    removeTask: cronResolver.removeTask.bind(cronResolver),
   },
   Cron: {
     name: (root: Cron) => {

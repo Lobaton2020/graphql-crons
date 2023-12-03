@@ -1,16 +1,23 @@
+scalar Date
 type Query {
-  crons: [Cron!]!
+  crons(limit: Int!): [Cron!]!
   cron(id: ID!): Cron
+  projects: [Project!]!
 }
 
 type Mutation {
-    createCron(cron: NewCronInput):String
-    editCron(id:ID, cron: EditCronInput):Cron
+  createCron(cron: NewCronInput): String
+  editCron(id: ID!, cron: EditCronInput!): Cron
+  editTask(id: ID!, task: EditTaskInput!): String
+  removeCron(id: ID!): String
+  removeTask(id: ID!): String
+  copyCron(id: ID!): String
+  createTask(cronograma_id: String!, task: EditTaskInput!): String!
 }
 type Cron {
   id: ID!
   name: String!
-  date: String!
+  date: Date!
   tasks: [Task]
 }
 
@@ -24,15 +31,26 @@ type Task {
 }
 
 type Project {
-    id: ID!
-    name: String!
+  id: ID!
+  name: String!
 }
 
-input NewCronInput{
-    name: String!
-    date: String!
+input NewCronInput {
+  name: String!
+  date: String!
 }
 input EditCronInput {
-    name: String!
-    date: String!
+  name: String!
+  date: String!
+}
+input EditProject {
+  id: ID!
+  name: String
+}
+input EditTaskInput {
+  description: String
+  state: Boolean
+  hour: Int
+  minute: Int
+  project: EditProject
 }

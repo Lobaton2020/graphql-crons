@@ -1,4 +1,4 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -23,5 +23,12 @@ body {
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb));http://localhost:3000/crons/12
+} */
+
+.link_style:active{
+  color:cornflowerblue
+}
+.link_style{
+  color: #007bff
 }

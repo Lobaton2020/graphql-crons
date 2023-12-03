@@ -1,59 +1,47 @@
-import { gql } from "@apollo/client";
-import createApolloClient from "@app/graphql";
-import Link from "next/link";
-import { Key } from "react";
+"use client";
 
-export default async function CronDetail({ params }) {
-  const client = createApolloClient();
+import { CreateOrEditTask } from "@app/app/components/crons/tasks/CreateOrEditTask";
+import { ITask, ListTask } from "@app/app/components/crons/tasks/ListTask";
+import { useGqlQuery } from "@app/app/hooks/useGqlQuery";
+import { GET_CRONS_DETAIL } from "@app/graphql/queries/getCronsDetail";
+import { Anchor, Container } from "@mantine/core";
+import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
+import Link from "next/link";
+import { useState } from "react";
+export default function CronDetail({ params }: Params) {
   const {
-    data: {
-      cron: { tasks, name },
-    },
-  } = await client.query({
-    query: gql`
-      query Query($cronId: ID!, $withDate: Boolean!) {
-        cron(id: $cronId) {
-          date @include(if: $withDate)
-          id
-          name
-          tasks {
-            description
-            hour
-            minute
-            id
-            project {
-              id
-              name
-            }
-            state
-          }
-        }
-      }
-    `,
-    variables: {
-      cronId: params.cronId,
-      withDate: false,
-    },
-  });
+    data: { cron: { name = "", tasks = [] } = {} },
+    refetch,
+    loading,
+  } = useGqlQuery(GET_CRONS_DETAIL, { cronId: params.cronId });
+  const [isEditTask, setIsEditTask] = useState(false);
+  const [detailTask, setDetailTask] = useState({});
+  const handleClickEdit = (task: ITask) => {
+    setIsEditTask(true);
+    setDetailTask(task);
+  };
   return (
-    <main className="flex min-h-screen flex-col  p-24">
-      {name}
-      <br />
-      <>
-        {tasks.map((task: any, id: Key | null | undefined) => {
-          return (
-            <ul key={id}>
-              <span>{task.state ? "Done" : "Pending"} </span>
-              <span>{task.hour + ":" + task.minute} </span>
-              <span>{task.description} </span>
-              <span>{task.project?.name} </span>
-            </ul>
-          );
-        })}
-        <strong>
-          <Link href="/crons">Regresar</Link>
-        </strong>
-      </>
-    </main>
+    <Container size={"lg"}>
+      {isEditTask ? (
+        <CreateOrEditTask
+          task={detailTask}
+          setIsEditTask={setIsEditTask}
+          refetch={refetch}
+        />
+      ) : (
+        <CreateOrEditTask refetch={refetch} />
+      )}
+
+      <ListTask
+        handleClickEdit={handleClickEdit}
+        loading={loading}
+        name={name}
+        tasks={tasks}
+        refetch={refetch}
+      />
+      <Anchor component={Link} href="/crons" mb={30}>
+        Regresar
+      </Anchor>
+    </Container>
   );
 }

@@ -1,5 +1,6 @@
 import { CreateCronDto } from "../../graphql/resolvers/cron/cron.resolver"
 import { pool } from "../adapter/config";
+import { genericInsert, genericUpdate } from "./common";
 
 export interface Cron {
   id: string;
@@ -29,6 +30,7 @@ function interceptor(fn: any, that?: any): Function {
 }
 
 export class CronDao {
+  private userId = 1;
   async getConnection(): Promise<any> {
     const connection = await pool.getConnection();
     connection.release = interceptor(
@@ -37,10 +39,11 @@ export class CronDao {
     ) as any;
     return connection;
   }
-  async getCrons(): Promise<Cron[]> {
+  async getCrons(limit: number): Promise<Cron[]> {
     const connection = await this.getConnection();
     const [data]: any = await connection.query(
-      "SELECT id_cronograma_PK as id, titulo as name, fecha as date FROM cronograma"
+      "SELECT id_cronograma_PK as id, titulo as name, fecha as date FROM cronograma ORDER BY id_cronograma_PK DESC LIMIT ?  ",
+      [limit]
     );
     await connection.release();
     return data;
@@ -66,7 +69,8 @@ export class CronDao {
                 descripcion as description,
                 estado as state,
                 hora as hour,
-                minuto as minute
+                minuto as minute,
+                project_id
                 FROM tarea_cronograma WHERE id_cronograma_FK = ?`,
       [id]
     );
@@ -113,5 +117,107 @@ export class CronDao {
     );
     await connection.release();
     return data[0];
+  }
+
+  async editTask(id: number, task: Task) {
+    const insertObject = {
+      descripcion: task.description,
+      hora: task.hour,
+      minuto: task.minute,
+      estado: task.state,
+      project_id: task.project?.id,
+    };
+
+    const { queryParams, queryString } = genericUpdate(
+      "tarea_cronograma",
+      insertObject,
+      {
+        id_tarea_cronograma_PK: id,
+      }
+    );
+    const connection = await this.getConnection();
+    await connection.query(queryString, queryParams);
+    await connection.release();
+    return "OK";
+  }
+
+  async getProjects() {
+    const connection = await this.getConnection();
+    const [data]: any = await connection.query(
+      "SELECT name, id from projects where user_id = ? AND status = true",
+      [this.userId]
+    );
+    await connection.release();
+    return data;
+  }
+  async createTask(cronograma_id: number, task: Task) {
+    const insertObject = {
+      descripcion: task.description,
+      hora: task.hour,
+      minuto: task.minute,
+      estado: false,
+      project_id: task.project?.id,
+      id_cronograma_FK: cronograma_id,
+    };
+    const { queryParams, queryString } = genericInsert(
+      "tarea_cronograma",
+      insertObject
+    );
+    const connection = await this.getConnection();
+    await connection.query(queryString, queryParams);
+    await connection.release();
+    return "OK";
+  }
+
+  async removeTask(id: string) {
+    const connection = await this.getConnection();
+    await connection.query(
+      "DELETE FROM tarea_cronograma WHERE id_tarea_cronograma_PK = ?",
+      [id]
+    );
+    await connection.release();
+  }
+  async removeCron(id: string) {
+    const connection = await this.getConnection();
+    await connection.query(
+      `DELETE FROM tarea_cronograma WHERE id_cronograma_FK = ?`,
+      [id]
+    );
+    await connection.query(
+      "DELETE FROM cronograma WHERE id_usuario_FK = ? AND id_cronograma_PK = ?",
+      [this.userId, id]
+    );
+    await connection.release();
+  }
+
+  async copyCron(cronogramaId: string) {
+    const connection = await this.getConnection();
+    const cronograma = await this.getCronById(parseInt(cronogramaId));
+    const sql = `INSERT INTO cronograma (id_usuario_FK, titulo, fecha)VALUES (?, CONCAT(?, ' Copy'), ?);`;
+
+    const [insertResult] = await connection.query(sql, [
+      this.userId,
+      cronograma.name,
+      new Date().toISOString(),
+    ]);
+    const newCronogramaId = insertResult.insertId;
+    const tareas = await this.getTasksByCronId(parseInt(cronogramaId));
+    for (const tarea of tareas) {
+      const tareaCronograma = {
+        id_cronograma_FK: newCronogramaId,
+        descripcion: tarea.description,
+        hora: tarea.hour,
+        minuto: tarea.minute,
+        estado: 0,
+        project_id: tarea.project_id || null,
+      };
+      const { queryParams, queryString } = genericInsert(
+        "tarea_cronograma",
+        tareaCronograma
+      );
+      await connection.query(queryString, queryParams);
+    }
+
+    await connection.release();
   }
 }
