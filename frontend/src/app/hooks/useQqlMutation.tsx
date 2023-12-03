@@ -24,7 +24,7 @@ export const useQqlMutation = (
   const [data, setData] = useState({});
   const client = apolloClient;
   if (!options.onError) {
-    options.onError = (error) => toast.error(`${error.message}`);
+    options.onError = (error: any) => toast.error(`${error.message}`);
   }
   const mutate = (variables: any) => {
     options?.onStart && options?.onStart();

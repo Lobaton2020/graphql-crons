@@ -20,7 +20,6 @@ import {
   IconPointFilled,
   IconTrash,
 } from "@tabler/icons-react";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { useQqlMutation } from "@app/app/hooks/useQqlMutation";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
@@ -52,7 +51,7 @@ const MenuOpcionesCard = ({
   task,
   handleClickEdit,
   handleClickRemove,
-}: Params) => (
+}: any) => (
   <Menu width={200} shadow="md" variant="xs">
     <Menu.Target>
       <Center>
@@ -86,7 +85,7 @@ const DetailTask = ({
   handleClickEdit,
   handleClickRemove,
   refetch,
-}: Params) => {
+}: any) => {
   const fs = state ? "italic" : "inherit";
   const td = state ? "line-through" : "";
   return (
@@ -140,7 +139,7 @@ export const ListTask = ({
   refetch,
   loading,
   handleClickEdit,
-}: Params) => {
+}: any) => {
   const [mutate] = useQqlMutation(UPDATE_TASK, {
     onDone: () => refetch(),
     onSuccess: () => toast.success("Tarea Actualizada"),
@@ -148,7 +147,6 @@ export const ListTask = ({
   const [removeTask] = useQqlMutation(REMOVE_TASK, {
     onDone: () => refetch(),
     onSuccess: () => toast.info("Tarea eliminada"),
-    onError: (error) => toast.error(`${error.message}`),
   });
   const [tasksOrdered, setTasksOrdered] = useState<ITask[]>([]);
   useEffect(() => {

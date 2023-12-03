@@ -26,7 +26,6 @@ import { format } from "date-fns";
 import setDefaultOptions from "date-fns/setDefaultOptions";
 import { es } from "date-fns/locale";
 import { CreateCronForm } from "../components/crons/CreateCronModal";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { modals } from "@mantine/modals";
 import { useQqlMutation } from "../hooks/useQqlMutation";
 import { REMOVE_CRON } from "@app/graphql/mutations/removeCron";
@@ -45,7 +44,7 @@ const MenuOpcionesCard = ({
   handleClickEdit,
   handleClickRemove,
   handleClickCopy,
-}: Params) => (
+}: any) => (
   <Menu width={200} shadow="md" variant="sm">
     <Menu.Target>
       <ActionIcon size={"sm"} color="dark" variant="white">

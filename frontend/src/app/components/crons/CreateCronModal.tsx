@@ -22,7 +22,6 @@ export function CreateCronForm({ refetch, open, setOpen }: PropsModal) {
   const [mutate, { loading }] = useQqlMutation(CREATE_CRON, {
     onDone: () => refetch(),
     onSuccess: () => toast.success("Cronograma creado"),
-    onError: (error) => toast.error(`${error.message}`),
   });
   const getDefaultDate = () => {
     const date = new Date();

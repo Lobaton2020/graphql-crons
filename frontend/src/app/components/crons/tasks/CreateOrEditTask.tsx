@@ -7,7 +7,6 @@ import { useForm } from "@mantine/form";
 import { createTaskValidation } from "@app/app/validatios/tasks.validation";
 import { useQqlMutation } from "@app/app/hooks/useQqlMutation";
 import { CREATE_TASK } from "@app/graphql/mutations/createTask";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import { UPDATE_TASK } from "@app/graphql/mutations/updateTask";
@@ -18,7 +17,7 @@ const addZero = (number: number): string => {
   }
   return number < 10 ? `0${number}` : `${number}`;
 };
-export const CreateOrEditTask = ({ task, setIsEditTask, refetch }: Params) => {
+export const CreateOrEditTask = ({ task, setIsEditTask, refetch }: any) => {
   const { cronId } = useParams();
   const {
     data: { projects = [{ name: "Default" }] },
@@ -30,7 +29,6 @@ export const CreateOrEditTask = ({ task, setIsEditTask, refetch }: Params) => {
       toast.success(`Tarea ${task ? "actualizada" : "añadida"}`);
       setIsEditTask && setIsEditTask(false);
     },
-    onError: (error) => toast.error(`${error.message}`),
   });
   const form = useForm({
     initialValues: {

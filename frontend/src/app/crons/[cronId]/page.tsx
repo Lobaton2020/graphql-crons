@@ -5,10 +5,9 @@ import { ITask, ListTask } from "@app/app/components/crons/tasks/ListTask";
 import { useGqlQuery } from "@app/app/hooks/useGqlQuery";
 import { GET_CRONS_DETAIL } from "@app/graphql/queries/getCronsDetail";
 import { Anchor, Container } from "@mantine/core";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import Link from "next/link";
 import { useState } from "react";
-export default function CronDetail({ params }: Params) {
+export default function CronDetail({ params }: any) {
   const {
     data: { cron: { name = "", tasks = [] } = {} },
     refetch,
