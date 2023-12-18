@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.ts --exec ts-node src/index.ts -e ts,graphql,env",
     "build": "tsc -p . && ncp src/graphql/schemas dist/graphql/schemas",
-    "start": "node ./dist/index.js"
+    "start": "node ./dist/index.js",
+    "deploy:vercel:prod": "yarn build && npx vercel --prod"
   },
   "keywords": [],
   "author": "",

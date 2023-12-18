@@ -77,6 +77,20 @@ export class CronDao {
     await connection.release();
     return data;
   }
+  async getTasksByCronDate(date: string) {
+    const connection = await this.getConnection();
+    const [data]: any = await connection.query(
+      `SELECT  tc.descripcion as description,
+          tc.hora as hour,
+          tc.minuto as minute
+          FROM tarea_cronograma tc
+          INNER JOIN cronograma c on tc.id_cronograma_FK = c.id_cronograma_PK
+          WHERE DATE(c.fecha) = '2023-12-17'`,
+      [date]
+    );
+    await connection.release();
+    return data;
+  }
 
   async getProjectByTaskId(id: number) {
     const connection = await this.getConnection();
