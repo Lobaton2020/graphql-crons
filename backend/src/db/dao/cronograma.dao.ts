@@ -83,11 +83,10 @@ export class CronDao {
     const [data]: any = await connection.query(
       `SELECT  tc.descripcion as description,
                 tc.hora as hour,
-                tc.minuto as minute,
+                tc.minuto as minute
                 FROM tarea_cronograma tc
                 INNER JOIN cronograma c on tc.id_cronograma_FK = c.id_cronograma_PK
-                where DATE_FORMAT(DATE_SUB(c.fecha, INTERVAL 5 HOUR), '%Y-%m-%d') = ?
-               order by fecha_local desc`,
+                where DATE_FORMAT(DATE_SUB(c.fecha, INTERVAL 5 HOUR), '%Y-%m-%d') = ?`,
       [date]
     );
     await connection.release();
