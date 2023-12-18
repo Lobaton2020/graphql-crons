@@ -85,7 +85,7 @@ export class CronDao {
           tc.minuto as minute
           FROM tarea_cronograma tc
           INNER JOIN cronograma c on tc.id_cronograma_FK = c.id_cronograma_PK
-          WHERE DATE(c.fecha) = '2023-12-17'`,
+          WHERE DATE(c.fecha) = ?`,
       [date]
     );
     await connection.release();
