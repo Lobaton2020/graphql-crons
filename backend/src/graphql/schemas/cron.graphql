@@ -13,6 +13,7 @@ type Mutation {
   removeTask(id: ID!): String
   copyCron(id: ID!): String
   createTask(cronograma_id: String!, task: EditTaskInput!): String!
+  moveTask(source_cronogram_id: ID!, destine_cronogram_id: ID!, task_id: ID!): String
 }
 type Cron {
   id: ID!

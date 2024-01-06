@@ -30,6 +30,11 @@ interface ArgsGetCrons {
 interface ResolverArgsMutationId {
   id: string;
 }
+export interface ArgsMoveTaskCron{
+  source_cronogram_id: string;
+  destine_cronogram_id: string;
+  task_id: string;
+}
 export class CronResolver {
   async getCrons(
     root: void,
@@ -111,6 +116,14 @@ export class CronResolver {
     ctx: ApolloContext
   ) {
     await ctx.cronDao.copyCron(args.id);
+  }
+
+  async moveTask(
+    root: void,
+    args: ArgsMoveTaskCron,
+    ctx: ApolloContext
+  ) {
+    await ctx.cronDao.moveTask(args);
   }
 
 }

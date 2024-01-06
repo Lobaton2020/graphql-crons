@@ -1,4 +1,5 @@
-import { CreateCronDto } from "../../graphql/resolvers/cron/cron.resolver"
+import { ArgsMoveTaskCron, CreateCronDto } from "../../graphql/resolvers/cron/cron.resolver"
+import { compararPorHoraMinuto } from "../../utils/ordenarHorasMinutos";
 import { pool } from "../adapter/config";
 import { genericInsert, genericUpdate } from "./common";
 
@@ -8,6 +9,7 @@ export interface Cron {
   date: Date;
 }
 export interface Task {
+  id: number
   description: string;
   state: boolean;
   hour: number;
@@ -234,5 +236,72 @@ export class CronDao {
     }
 
     await connection.release();
+  }
+  async getTaskById(id: number) {
+    const connection = await this.getConnection();
+    const [data]: any = await connection.query(
+      `SELECT id_tarea_cronograma_PK as id,
+              descripcion as description,
+              estado as state,
+              hora as hour,
+              minuto as minute,
+              project_id
+          FROM tarea_cronograma WHERE id_tarea_cronograma_PK = ?`,
+      [id]
+    );
+    await connection.release();
+    return data;
+  }
+  async autoOrganizeOrder(idCronograma: number): Promise<boolean> {
+    const listTasks: Task[] = await this.getTasksByCronId(idCronograma);
+    listTasks.sort((a, b) => compararPorHoraMinuto(a, b));
+    let counter = 1;
+
+    for (const task of listTasks) {
+      const sql = "UPDATE tarea_cronograma SET `order` = ? WHERE id_cronograma_FK = ? AND id_tarea_cronograma_PK = ?";
+      const queryParams = [counter, idCronograma, task.id];
+
+      const connection = await this.getConnection();
+      await connection.query(sql, queryParams);
+      await connection.release();
+      counter++;
+    }
+    return true;
+  }
+
+  async moveTask({ destine_cronogram_id, source_cronogram_id, task_id }: ArgsMoveTaskCron){
+    const isMineCronogramaFuente = await this.getCronById(parseInt(source_cronogram_id));
+    const isMineCronogramaDestino = await this.getCronById(parseInt(destine_cronogram_id));
+
+    if (!isMineCronogramaFuente || !isMineCronogramaDestino) {
+      throw new Error("No está autorizado para esta operación");
+    }
+
+    const [ task ] = await this.getTaskById(parseInt(task_id));
+    if(!task){
+      throw new Error("No existe tarea con ese ID");
+    }
+    task.id_cronograma_FK = destine_cronogram_id;
+
+    const insertObject = {
+      descripcion: task.description,
+      hora: task.hour,
+      minuto: task.minute,
+      estado: task.state,
+      project_id: task.project_id,
+      id_cronograma_FK: task.id_cronograma_FK,
+    };
+
+    const { queryParams, queryString } = genericInsert(
+      "tarea_cronograma",
+      insertObject
+    );
+    const connection = await this.getConnection();
+    await connection.query(queryString, queryParams);
+    await this.removeTask(task_id);
+    await connection.release();
+    this.autoOrganizeOrder(parseInt(destine_cronogram_id))
+      .catch((err)=> console.log(`Error order cronogram: ${err}`))
+
   }
 }

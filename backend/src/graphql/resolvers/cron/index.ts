@@ -18,6 +18,7 @@ export const resolversCron: IResolvers = {
     removeCron: cronResolver.removeCron.bind(cronResolver),
     copyCron: cronResolver.copyCron.bind(cronResolver),
     removeTask: cronResolver.removeTask.bind(cronResolver),
+    moveTask: cronResolver.moveTask.bind(cronResolver),
   },
   Cron: {
     name: (root: Cron) => {
