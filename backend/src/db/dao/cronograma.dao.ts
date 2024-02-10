@@ -154,7 +154,12 @@ export class CronDao {
     );
     const connection = await this.getConnection();
     await connection.query(queryString, queryParams);
+    const sql = "SELECT id_cronograma_FK from tarea_cronograma where id_tarea_cronograma_PK = ?";
+    const [ [ { id_cronograma_FK } ] ] = await connection.query(sql, [id]);
     await connection.release();
+    this.autoOrganizeOrder(id_cronograma_FK).catch((err) =>
+      console.log(`Error order cronogram:createTask ${err}`)
+    );
     return "OK";
   }
 
@@ -183,16 +188,25 @@ export class CronDao {
     const connection = await this.getConnection();
     await connection.query(queryString, queryParams);
     await connection.release();
+    this.autoOrganizeOrder(cronograma_id).catch((err) =>
+      console.log(`Error order cronogram:createTask ${err}`)
+    );
     return "OK";
   }
 
   async removeTask(id: string) {
     const connection = await this.getConnection();
+    const sql = "SELECT id_cronograma_FK from tarea_cronograma where id_tarea_cronograma_PK = ?";
+    const [ [ { id_cronograma_FK } ] ] = await connection.query(sql, [id]);
     await connection.query(
       "DELETE FROM tarea_cronograma WHERE id_tarea_cronograma_PK = ?",
       [id]
     );
     await connection.release();
+    this.autoOrganizeOrder(id_cronograma_FK).catch((err) =>
+      console.log(`Error order cronogram:removeTask ${err}`)
+    );
+
   }
   async removeCron(id: string) {
     const connection = await this.getConnection();
