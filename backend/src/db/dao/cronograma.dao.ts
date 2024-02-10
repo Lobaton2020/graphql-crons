@@ -117,6 +117,12 @@ export class CronDao {
       [userId, data.name, new Date(data.date)]
     );
     await connection.release();
+   /*
+   TODO: if some order fails I need to use this script
+   Array.from({ length: 348 },(x, i)=> i + 1).splice(325).map( i =>
+    this.autoOrganizeOrder(i).then(x=>console.log("DONE::"+i)).catch((err) =>
+      console.log(`Error order cronogram:editTask ${err}`)
+    ))*/
   }
   async editCron(id: number, data: CreateCronDto): Promise<void> {
     const connection = await this.getConnection();
@@ -158,7 +164,7 @@ export class CronDao {
     const [ [ { id_cronograma_FK } ] ] = await connection.query(sql, [id]);
     await connection.release();
     this.autoOrganizeOrder(id_cronograma_FK).catch((err) =>
-      console.log(`Error order cronogram:createTask ${err}`)
+      console.log(`Error order cronogram:editTask ${err}`)
     );
     return "OK";
   }
@@ -271,15 +277,16 @@ export class CronDao {
     listTasks.sort((a, b) => compararPorHoraMinuto(a, b));
     let counter = 1;
 
+    const connection = await this.getConnection();
     for (const task of listTasks) {
-      const sql = "UPDATE tarea_cronograma SET `order` = ? WHERE id_cronograma_FK = ? AND id_tarea_cronograma_PK = ?";
+      const sql =
+        "UPDATE tarea_cronograma SET `order` = ? WHERE id_cronograma_FK = ? AND id_tarea_cronograma_PK = ?";
       const queryParams = [counter, idCronograma, task.id];
 
-      const connection = await this.getConnection();
       await connection.query(sql, queryParams);
-      await connection.release();
       counter++;
     }
+    await connection.release();
     return true;
   }
 
