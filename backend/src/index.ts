@@ -6,6 +6,7 @@ config();
 import { schema } from "./graphql";
 import { CronDao } from "./db/dao/cronograma.dao";
 import handlerGetReminders from "./alexa/handlerGetReminders";
+import { pool } from "./db/adapter/config";
 export interface ApolloContext {
   cronDao: CronDao;
 }
@@ -20,7 +21,7 @@ async function bootstrap() {
     introspection: true,
     nodeEnv: process.env.NODE_ENV || "development",
     context: () => ({
-      cronDao: new CronDao(),
+      cronDao: new CronDao(pool),
     }),
   });
   await apolloServer.start();

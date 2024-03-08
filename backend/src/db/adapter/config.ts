@@ -5,4 +5,18 @@ export const pool = createPool({
   user: process.env.DB_USER,
   password: `${process.env.DB_PASSWORD}`,
   database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 50,
+  queueLimit: 0,
 });
+
+// pool.on("connection", (connection) => {
+//   console.log("Conexión a la base de datos establecida");
+// });
+// pool.on("enqueue", () => {
+//   console.error("Encolado");
+// });
+
+// pool.on("release", () => {
+//   console.error("Error en la conexión a la base de datos: encolado");
+// });

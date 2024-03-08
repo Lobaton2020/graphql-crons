@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { CronDao } from "../db/dao/cronograma.dao";
-const dao = new CronDao();
+import { pool } from "../db/adapter/config";
+const dao = new CronDao(pool);
 export default async (req: Request, res: Response) => {
   const date = (req.query.date ?? "") as string;
   const dateI = new Date(date);
