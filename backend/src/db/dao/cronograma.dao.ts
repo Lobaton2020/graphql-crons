@@ -221,6 +221,9 @@ export class CronDao {
       );
       await this.db.query(queryString, queryParams);
     }
+    this.autoOrganizeOrder(newCronogramaId).catch((err) =>
+      console.log(`Error order cronogram:removeTask ${err}`)
+    );
   }
   async getTaskById(id: number) {
     const [data]: any = await this.db.query(
