@@ -46,4 +46,4 @@ spec:
       volumes:
         - name: env-file
           secret:
-            secretName: cronogramas-secrets
+            secretName: tomanotas-secrets

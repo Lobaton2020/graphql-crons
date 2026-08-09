@@ -1,0 +1,68 @@
+scalar Date
+
+type Query {
+  crons(limit: Int!): [Cron!]!
+  cron(id: ID!): Cron
+  projects: [Project!]!
+}
+
+type Mutation {
+  createCron(cron: NewCronInput!): Cron!
+  editCron(id: ID!, cron: EditCronInput!): Cron!
+  removeCron(id: ID!): Boolean!
+  copyCron(id: ID!): Cron!
+
+  createTask(cronogramaId: ID!, task: NewTaskInput!): Task!
+  editTask(id: ID!, task: EditTaskInput!): Task!
+  removeTask(id: ID!): Boolean!
+  moveTask(sourceCronogramaId: ID!, destineCronogramaId: ID!, taskId: ID!): Task!
+
+  registerDevice(deviceId: String!, token: String!): String!
+}
+
+type Cron {
+  id: ID!
+  name: String!
+  date: String!
+  tasks: [Task!]!
+}
+
+type Task {
+  id: ID!
+  description: String!
+  state: Boolean!
+  hour: Int
+  minute: Int
+  order: Int!
+  project: Project
+}
+
+type Project {
+  id: ID!
+  name: String!
+}
+
+input NewCronInput {
+  name: String!
+  date: String!
+}
+
+input EditCronInput {
+  name: String!
+  date: String!
+}
+
+input NewTaskInput {
+  description: String!
+  hour: Int
+  minute: Int
+  projectId: ID
+}
+
+input EditTaskInput {
+  description: String
+  hour: Int
+  minute: Int
+  state: Boolean
+  projectId: ID
+}
